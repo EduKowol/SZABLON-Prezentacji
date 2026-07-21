@@ -1,0 +1,206 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{config/presentation-style}[2026/07/21 WEAiL presentation theme]
+
+\RequirePackage{iftex}
+\ifPDFTeX
+  \PackageError{presentation-style}{Ten szablon wymaga LuaLaTeX}{Uruchom latexmk main.tex.}
+\else
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX}
+  \IfFontExistsTF{Aptos}{\setsansfont{Aptos}}{%
+    \IfFontExistsTF{Arial}{\setsansfont{Arial}}{\setsansfont{TeX Gyre Heros}}}
+  \IfFontExistsTF{Consolas}{\setmonofont{Consolas}}{\setmonofont{Latin Modern Mono}}
+\fi
+
+\RequirePackage[polish,english]{babel}
+\RequirePackage{etoolbox}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{ragged2e}
+\RequirePackage{listings}
+\RequirePackage{tikz}
+\RequirePackage{csquotes}
+\RequirePackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{bibliografia.bib}
+
+\definecolor{weailblue}{HTML}{0765A9}
+\definecolor{weaillightblue}{HTML}{3798D0}
+\definecolor{weaildark}{HTML}{1D2730}
+\definecolor{weailmuted}{HTML}{60707D}
+\definecolor{weaillight}{HTML}{EAF3F8}
+\definecolor{kreativgreen}{HTML}{76BC21}
+
+\ifdefstring{\presentationlanguage}{english}{%
+  \selectlanguage{english}
+  \newcommand{\presentationtitle}{\titleen}
+  \newcommand{\facultyname}{\facultyen}
+  \newcommand{\universityname}{\universityen}
+  \newcommand{\programmename}{\programmeen}
+  \newcommand{\supervisorlabel}{Supervisor}
+  \newcommand{\albumlabel}{Student ID}
+  \newcommand{\universitylogo}{\universitylogoen}
+  \newcommand{\agendatitle}{Presentation outline}
+  \newcommand{\problemsectiontitle}{Problem and objectives}
+  \newcommand{\methodssectiontitle}{Methodology and implementation}
+  \newcommand{\resultssectiontitle}{Results and conclusions}
+  \newcommand{\bibliographytitle}{References}
+  \newcommand{\thankstitle}{Thank you for your attention}
+  \newcommand{\questionslabel}{Questions and discussion}
+  \newcommand{\engineeringname}{Engineering thesis}
+  \newcommand{\mastername}{Master's thesis}
+  \newcommand{\doctoralname}{Doctoral dissertation}
+}{%
+  \selectlanguage{polish}
+  \newcommand{\presentationtitle}{\titlepl}
+  \newcommand{\facultyname}{\facultypl}
+  \newcommand{\universityname}{\universitypl}
+  \newcommand{\programmename}{\programmepl}
+  \newcommand{\supervisorlabel}{Promotor}
+  \newcommand{\albumlabel}{Nr albumu}
+  \newcommand{\universitylogo}{\universitylogopl}
+  \newcommand{\agendatitle}{Plan prezentacji}
+  \newcommand{\problemsectiontitle}{Problem i cel pracy}
+  \newcommand{\methodssectiontitle}{Metodyka i realizacja}
+  \newcommand{\resultssectiontitle}{Wyniki i wnioski}
+  \newcommand{\bibliographytitle}{Literatura}
+  \newcommand{\thankstitle}{Dziękuję za uwagę}
+  \newcommand{\questionslabel}{Pytania i dyskusja}
+  \newcommand{\engineeringname}{Praca inżynierska}
+  \newcommand{\mastername}{Praca magisterska}
+  \newcommand{\doctoralname}{Rozprawa doktorska}
+}
+\ifdefstring{\thesistype}{master}{\newcommand{\thesistypename}{\mastername}}{%
+  \ifdefstring{\thesistype}{doctoral}{\newcommand{\thesistypename}{\doctoralname}}{%
+    \newcommand{\thesistypename}{\engineeringname}}}
+
+\mode<presentation>
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{normal text}{fg=weaildark,bg=white}
+\setbeamercolor{structure}{fg=weailblue}
+\setbeamercolor{frametitle}{fg=weailblue,bg=white}
+\setbeamercolor{alerted text}{fg=weailblue}
+\setbeamercolor{block title}{fg=white,bg=weailblue}
+\setbeamercolor{block body}{fg=weaildark,bg=weaillight}
+\setbeamercolor{example text}{fg=kreativgreen}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small,series=\mdseries}
+\setbeamerfont{title}{size=\LARGE,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{footline}{size=\tiny}
+\setbeamersize{text margin left=8mm,text margin right=8mm}
+
+\newcommand{\weailheader}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west,inner sep=0pt] at ([xshift=7mm,yshift=-4mm]current page.north west)
+      {\includegraphics[width=25mm,height=10mm,keepaspectratio]{\universitylogo}};
+    \node[anchor=north,inner sep=0pt] at ([yshift=-3mm]current page.north)
+      {\includegraphics[width=25mm,height=11mm,keepaspectratio]{\facultylogo}};
+    \ifdefstring{\showkreativeulogo}{true}{%
+      \node[anchor=north east,inner sep=0pt] at ([xshift=-7mm,yshift=-3mm]current page.north east)
+        {\includegraphics[width=16mm,height=12mm,keepaspectratio]{\kreativeulogo}};
+    }{}
+    \draw[weaillightblue,line width=.35pt]
+      ([xshift=11mm,yshift=9mm]current page.south west) --
+      ([xshift=-11mm,yshift=9mm]current page.south east);
+  \end{tikzpicture}%
+}
+
+\setbeamertemplate{background}{\weailheader}
+\setbeamertemplate{frametitle}{%
+  \vspace*{12mm}
+  \insertframetitle\par
+  \ifx\insertframesubtitle\@empty\else
+    {\usebeamerfont{framesubtitle}\color{weailmuted}\insertframesubtitle\par}
+  \fi
+  \vspace*{-1mm}
+}
+\setbeamertemplate{footline}{%
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[wd=.86\paperwidth,ht=7mm,dp=1.5mm,leftskip=11mm]{footline}%
+      \color{weaillightblue}\universityname\, | \,www.po.edu.pl\par
+      \facultyname\, | \,www.weaii.po.edu.pl
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.14\paperwidth,ht=7mm,dp=1.5mm,rightskip=7mm plus1fil]{footline}%
+      \color{weailblue}\insertframenumber/\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+
+\setbeamertemplate{itemize item}{\color{weailblue}\small\raise0.15ex\hbox{\textbullet}}
+\setbeamertemplate{itemize subitem}{\color{weaillightblue}\scriptsize\raise0.2ex\hbox{\textbullet}}
+\setbeamertemplate{enumerate item}{\color{weailblue}\insertenumlabel.}
+
+\newcommand{\highlight}[1]{\textcolor{weailblue}{\textbf{#1}}}
+\newcommand{\metric}[2]{%
+  \begin{minipage}[t]{0.30\linewidth}\centering
+    {\color{weailblue}\fontsize{24}{27}\selectfont\bfseries #1}\par
+    \vspace{1mm}{\small\color{weailmuted}#2}
+  \end{minipage}}
+\newcommand{\imageplaceholder}[2][0.40\textheight]{%
+  \fcolorbox{weaillightblue}{weaillight}{%
+    \parbox[c][#1][c]{0.94\linewidth}{\centering\color{weailmuted}\small #2}}}
+
+% Pakiet listings nie dodaje automatycznie znakow Unicode o kodach > 255
+% do listy znakow przetwarzanych jak litery. W LuaLaTeX-u i XeLaTeX-u brak
+% tych deklaracji przesuwa m.in. ą, ę, ł, ś, ź i ż na poczatek fragmentu kodu.
+% Bezposrednia rejestracja znakow zachowuje ich kolejnosc oraz kolorowanie.
+\ifPDFTeX\else
+  \begingroup
+    \catcode0=12
+    \makeatletter
+    \g@addto@macro\lst@DefEC{%
+      \lst@CCECUse\lst@ProcessLetter
+      ąćęłńśźżĄĆĘŁŃŚŹŻ%
+      ^^00%
+    }%
+  \endgroup
+\fi
+\lstdefinestyle{weail}{
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\bfseries\color{weailblue},
+  commentstyle=\itshape\color{weailmuted},
+  stringstyle=\color{kreativgreen!70!black},
+  backgroundcolor=\color{weaillight},
+  frame=single,
+  rulecolor=\color{weaillightblue},
+  numbers=left,
+  numberstyle=\tiny\color{weailmuted},
+  breaklines=true,
+  showstringspaces=false,
+  upquote=true
+}
+
+\setbeamertemplate{title page}{%
+  \vspace*{17mm}
+  \begin{center}
+    {\usebeamerfont{title}\color{weailblue}\inserttitle\par}
+    \vspace{3mm}
+    {\usebeamerfont{subtitle}\color{weailmuted}\thesistypename\par}
+    \vspace{8mm}
+    {\large\bfseries\insertauthor\par}
+    \vspace{1mm}
+    {\small\albumlabel: \albumid\quad | \quad\programmename\par}
+    \vspace{5mm}
+    {\small\supervisorlabel: \supervisorname\par}
+    \ifdefempty{\auxsupervisorname}{}{\vspace{1mm}{\small\auxsupervisorname\par}}
+    \vfill
+    {\small\city, \presentationyear\par}
+  \end{center}
+}
+
+\AtBeginSection[]{%
+  \begin{frame}
+    \vspace*{20mm}
+    \begin{center}
+      {\color{weailblue}\fontsize{25}{29}\selectfont\bfseries\insertsectionhead\par}
+      \vspace{4mm}
+      {\color{weaillightblue}\rule{45mm}{0.5pt}}
+    \end{center}
+  \end{frame}
+}
+
+\endinput

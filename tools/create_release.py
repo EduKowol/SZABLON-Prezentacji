@@ -1,0 +1,251 @@
+#!/usr/bin/env python3
+"""Tworzy minimalną, przenośną paczkę startową szablonu prezentacji."""
+
+from __future__ import annotations
+
+import argparse
+import shutil
+import sys
+import tempfile
+import zipfile
+from pathlib import Path
+
+
+ROOT_FILES = (".gitignore", "README.md", "bibliografia.bib")
+SOURCE_DIRS = ("assets", "config")
+TOOL_FILES = ("create_release.py", "create_section.py")
+RESOURCE_DIRS = (
+    "figures",
+    "figures/source",
+    "data",
+    "code",
+    "scripts",
+    "tables",
+)
+IGNORED_NAMES = (
+    "build",
+    "dist",
+    "tmp",
+    "__pycache__",
+    "*.aux",
+    "*.bbl",
+    "*.bcf",
+    "*.blg",
+    "*.fdb_latexmk",
+    "*.fls",
+    "*.log",
+    "*.nav",
+    "*.out",
+    "*.pyc",
+    "*.run.xml",
+    "*.snm",
+    "*.synctex.gz",
+    "*.toc",
+    "*.vrb",
+)
+DEFAULT_ARCHIVES = {
+    "local": Path("dist/szablon-prezentacji-weail-local.zip"),
+    "online": Path("dist/szablon-prezentacji-weail-online.zip"),
+}
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Utwórz minimalny ZIP szablonu prezentacji z jednym przykładowym "
+            "plikiem sekcji, bez wyników kompilacji."
+        )
+    )
+    parser.add_argument("--output", type=Path, help="własna nazwa pliku wynikowego ZIP")
+    parser.add_argument(
+        "--target",
+        choices=("local", "online"),
+        help="wariant paczki; bez tej opcji program zapyta o wybór",
+    )
+    parser.add_argument(
+        "--project-root",
+        type=Path,
+        default=Path(__file__).resolve().parent.parent,
+        help="katalog projektu; domyślnie ustalany automatycznie",
+    )
+    return parser.parse_args()
+
+
+def choose_target(requested: str | None) -> str:
+    if requested:
+        return requested
+    if not sys.stdin.isatty():
+        raise ValueError(
+            "Brak interaktywnego terminala. Podaj --target local albo --target online."
+        )
+    print("Wybierz wariant paczki startowej:")
+    print("  1. local  - komputer lokalny; zawiera latexmkrc")
+    print("  2. online - Prism/Overleaf; bez lokalnego latexmkrc")
+    while True:
+        answer = input("Wariant [1/2, domyślnie 1]: ").strip().lower()
+        if answer in {"", "1", "local", "l"}:
+            return "local"
+        if answer in {"2", "online", "o"}:
+            return "online"
+        print("Wpisz 1 dla wariantu local albo 2 dla wariantu online.")
+
+
+def copy_required(source: Path, destination: Path) -> None:
+    if not source.exists():
+        raise FileNotFoundError(f"Brak wymaganego elementu: {source}")
+    if source.is_dir():
+        shutil.copytree(source, destination, ignore=shutil.ignore_patterns(*IGNORED_NAMES))
+    else:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+
+
+def starter_main() -> str:
+    return r"""% !TeX TXS-program:compile = txs:///latexmk/{-pdf}
+% !TeX root = main.tex
+\input{config/metadata}
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage{config/presentation-style}
+
+\title{\presentationtitle}
+\author{\authorname}
+\date{\presentationyear}
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{\agendatitle}
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+\section{Wprowadzenie}
+\input{sections/01-wprowadzenie}
+
+\ifdefstring{\lastslidetype}{title}{%
+  \begin{frame}\titlepage\end{frame}
+}{%
+  \ifdefstring{\lastslidetype}{thanks}{%
+    \begin{frame}
+      \begin{center}
+        {\color{weailblue}\LARGE\bfseries\thankstitle}\par
+        \vspace{5mm}{\large\questionslabel}
+      \end{center}
+    \end{frame}
+  }{}%
+}
+\end{document}
+"""
+
+
+def starter_section() -> str:
+    return r"""\begin{frame}{Cel prezentacji}
+  \begin{itemize}
+    \item Przedstaw problem i cel pracy.
+    \item Wyjaśnij przyjętą metodykę.
+    \item Pokaż najważniejsze wyniki i wnioski.
+  \end{itemize}
+\end{frame}
+"""
+
+
+def variant_readme(target: str) -> str:
+    if target == "local":
+        return """# Wariant lokalny
+
+Paczka zawiera `latexmkrc`. Kompiluj poleceniem `latexmk main.tex`.
+Gotowy dokument znajdzie się w `build/main.pdf`.
+"""
+    return """# Wariant internetowy
+
+Paczka jest przeznaczona do Prism, Overleaf lub podobnego edytora. Ustaw
+`main.tex` jako dokument główny i wybierz kompilator LuaLaTeX.
+"""
+
+
+def write_starter_tree(project_root: Path, staging: Path, target: str) -> None:
+    for name in ROOT_FILES:
+        copy_required(project_root / name, staging / name)
+    if target == "local":
+        copy_required(project_root / "latexmkrc", staging / "latexmkrc")
+    for name in SOURCE_DIRS:
+        copy_required(project_root / name, staging / name)
+
+    (staging / "WARIANT.md").write_text(variant_readme(target), encoding="utf-8")
+    (staging / "main.tex").write_text(starter_main(), encoding="utf-8")
+
+    tools_dir = staging / "tools"
+    tools_dir.mkdir()
+    for name in TOOL_FILES:
+        copy_required(project_root / "tools" / name, tools_dir / name)
+
+    sections_dir = staging / "sections"
+    sections_dir.mkdir()
+    (sections_dir / "01-wprowadzenie.tex").write_text(starter_section(), encoding="utf-8")
+    resources = sections_dir / "01-wprowadzenie"
+    for relative in RESOURCE_DIRS:
+        directory = resources / relative
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / ".gitkeep").touch()
+
+
+def create_zip(staging: Path, archive: Path) -> None:
+    archive.parent.mkdir(parents=True, exist_ok=True)
+    temporary = archive.with_suffix(archive.suffix + ".tmp")
+    if temporary.exists():
+        temporary.unlink()
+    try:
+        with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED) as handle:
+            for path in sorted(staging.rglob("*")):
+                if path.is_file():
+                    handle.write(path, path.relative_to(staging).as_posix())
+        temporary.replace(archive)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def main() -> int:
+    args = parse_args()
+    project_root = args.project_root.resolve()
+    try:
+        target = choose_target(args.target)
+    except ValueError as error:
+        print(f"Błąd: {error}", file=sys.stderr)
+        return 2
+
+    output = args.output or DEFAULT_ARCHIVES[target]
+    if not output.is_absolute():
+        output = project_root / output
+    output = output.resolve()
+
+    if not (project_root / "main.tex").is_file():
+        print(f"Błąd: nie znaleziono main.tex w {project_root}", file=sys.stderr)
+        return 2
+    if output.suffix.lower() != ".zip":
+        print("Błąd: plik wynikowy musi mieć rozszerzenie .zip.", file=sys.stderr)
+        return 2
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="presentation-release-") as temporary:
+            staging = Path(temporary) / "szablon-prezentacji-weail"
+            staging.mkdir()
+            write_starter_tree(project_root, staging, target)
+            create_zip(staging, output)
+    except (FileNotFoundError, OSError, ValueError, zipfile.BadZipFile) as error:
+        print(f"Błąd: {error}", file=sys.stderr)
+        return 1
+
+    with zipfile.ZipFile(output) as handle:
+        file_count = len([item for item in handle.infolist() if not item.is_dir()])
+    shown = output.relative_to(project_root) if project_root in output.parents else output
+    print(f"Utworzono: {shown}")
+    print(f"Wariant: {target}")
+    print(f"Liczba plików: {file_count}")
+    print(f"Rozmiar: {output.stat().st_size / 1024:.1f} KiB")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

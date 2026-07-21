@@ -1,0 +1,61 @@
+% !TeX document-id = {df9ec23f-6055-43ee-aadd-d039429067b8}
+% !TeX TXS-program:compile = txs:///latexmk/{-pdf}
+% !TeX root = main.tex
+% Kompilacja: latexmk main.tex (LuaLaTeX jest ustawiony w latexmkrc).
+
+\input{config/metadata}
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage{config/presentation-style}
+
+\title{\presentationtitle}
+\author{\authorname}
+\date{\presentationyear}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{\agendatitle}
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+\section{\problemsectiontitle}
+\input{sections/01-problem-cel}
+
+\section{\methodssectiontitle}
+\input{sections/02-metodyka}
+
+\section{\resultssectiontitle}
+\input{sections/03-wyniki}
+
+\begin{frame}[allowframebreaks]{\bibliographytitle}
+  \nocite{*}
+  \printbibliography[heading=none]
+\end{frame}
+
+\ifdefstring{\lastslidetype}{title}{%
+  \begin{frame}
+    \titlepage
+  \end{frame}
+}{%
+  \ifdefstring{\lastslidetype}{thanks}{%
+    \begin{frame}
+      \vspace*{20mm}
+      \begin{center}
+        {\color{weailblue}\fontsize{28}{32}\selectfont\bfseries \thankstitle}\par
+        \vspace{5mm}
+        {\large \questionslabel}\par
+        \vspace{12mm}
+        {\small\color{weailmuted}\authorname\quad | \quad\presentationtitle}
+      \end{center}
+    \end{frame}
+  }{%
+    \ifdefstring{\lastslidetype}{none}{}{%
+      \PackageError{main}{Nieznana wartosc lastslidetype: \lastslidetype}{Uzyj title, thanks albo none.}%
+    }%
+  }%
+}
+
+\end{document}

@@ -1,0 +1,40 @@
+\begin{frame}{Przyjęta metodyka prowadzi od wymagań do weryfikacji}
+  \begin{enumerate}
+    \item \highlight{Analiza} -- wymagania, dane wejściowe i ograniczenia.
+    \item \highlight{Projekt} -- architektura rozwiązania i dobór narzędzi.
+    \item \highlight{Realizacja} -- implementacja oraz integracja elementów.
+    \item \highlight{Walidacja} -- scenariusze badań i kryteria oceny.
+  \end{enumerate}
+  \vspace{5mm}
+  \imageplaceholder[0.22\textheight]{Miejsce na schemat procesu lub architekturę rozwiązania}
+\end{frame}
+
+\begin{frame}{Najważniejszy element rozwiązania}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.57\textwidth}
+      \imageplaceholder[0.43\textheight]{Miejsce na diagram, model, zrzut interfejsu albo fotografię prototypu}
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \begin{itemize}
+        \item Nazwij element i jego rolę.
+        \item Wyjaśnij przepływ informacji.
+        \item Wskaż kluczową decyzję projektową.
+        \item Podaj najważniejsze ograniczenie.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Przykład kodu źródłowego}
+\begin{lstlisting}[style=weail,language=Python]
+def moving_average(samples, window):
+    """Oblicz średnią kroczącą z próbek."""
+    # Obsługa polskich znaków: ąćęłńóśźż
+    return [
+        sum(samples[i:i + window]) / window
+        for i in range(len(samples) - window + 1)
+    ]
+\end{lstlisting}
+  \vspace{2mm}
+  \small Pokazuj wyłącznie fragment potrzebny do uzasadnienia decyzji technicznej.
+\end{frame}

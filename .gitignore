@@ -1,0 +1,20 @@
+tmp/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.lof
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+# Cały katalog wynikowy jest odtwarzalny poleceniem latexmk.
+build/
+~$*
+.DS_Store
+Thumbs.db
