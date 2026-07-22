@@ -154,13 +154,38 @@ def variant_readme(target: str) -> str:
     if target == "local":
         return """# Wariant lokalny
 
-Paczka zawiera `latexmkrc`. Kompiluj poleceniem `latexmk main.tex`.
-Gotowy dokument znajdzie się w `build/main.pdf`.
+Ta paczka zawiera `latexmkrc` i jest przeznaczona do kompilacji na komputerze.
+
+Na Windows zainstaluj MiKTeX oraz interpreter Perl (np. Strawberry Perl),
+ponieważ `latexmk` jest skryptem napisanym w Perlu. Sprawdź środowisko:
+
+```text
+perl --version
+latexmk -v
+lualatex --version
+biber --version
+```
+
+Po instalacji Perla uruchom ponownie terminal i edytor LaTeX. Następnie
+kompiluj prezentację poleceniem:
+
+```text
+latexmk main.tex
+```
+
+LuaLaTeX oraz katalog `build/` zostaną wybrane automatycznie. Gotowa
+prezentacja znajdzie się w `build/main.pdf`.
 """
     return """# Wariant internetowy
 
-Paczka jest przeznaczona do Prism, Overleaf lub podobnego edytora. Ustaw
-`main.tex` jako dokument główny i wybierz kompilator LuaLaTeX.
+Ta paczka jest przeznaczona do Prism, Overleaf lub podobnego edytora. Nie zawiera
+lokalnego pliku `latexmkrc`. Po imporcie ustaw:
+
+- dokument główny: `main.tex`;
+- kompilator: LuaLaTeX.
+
+Katalogiem plików pomocniczych zarządza platforma internetowa. Lokalna
+instalacja Perla nie jest potrzebna.
 """
 
 

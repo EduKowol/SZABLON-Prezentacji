@@ -1,5 +1,7 @@
 # Wszystkie artefakty kompilacji trafiają do jednego katalogu.
 # Dzięki temu katalog główny projektu zawiera wyłącznie źródła.
+# Na Windows program latexmk wymaga interpretera Perl, np. Strawberry Perl.
+# Sprawdzenie środowiska: perl --version oraz latexmk -v
 $out_dir = 'build';
 $aux_dir = 'build';
 

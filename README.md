@@ -9,6 +9,13 @@ dzięki czemu oba szablony można wykorzystywać w podobny sposób.
 
 ## Szybki start
 
+Do zalecanej kompilacji lokalnej na Windows potrzebne są **MiKTeX oraz Perl**,
+ponieważ używany przez szablon program `latexmk` jest skryptem napisanym w
+Perlu. Można zainstalować np. [Strawberry Perl](https://strawberryperl.com/),
+a następnie ponownie uruchomić terminal i edytor LaTeX. Edytory internetowe,
+takie jak Overleaf lub Prism, nie wymagają instalowania Perla na komputerze
+użytkownika.
+
 1. Uzupełnij dane w `config/metadata.tex`.
 2. Zastąp treści demonstracyjne w katalogu `sections/`.
 3. Dodaj własne rysunki w podkatalogach sekcji i wstawiaj je przez `\includegraphics`.
@@ -16,6 +23,31 @@ dzięki czemu oba szablony można wykorzystywać w podobny sposób.
 
 Gotowy plik znajdzie się w `build/main.pdf`. Projekt wymaga LuaLaTeX; wybór
 silnika i katalog wynikowy są zapisane w `latexmkrc`.
+
+## Kompilacja lokalna w Windows
+
+Przed pierwszą kompilacją sprawdź wymagane programy:
+
+```text
+perl --version
+latexmk -v
+lualatex --version
+biber --version
+```
+
+Jeżeli `latexmk` zgłasza brak interpretera Perl albo polecenie `perl` nie jest
+rozpoznawane, zainstaluj Perl (np. Strawberry Perl), zamknij i ponownie otwórz
+terminal oraz edytor LaTeX, a potem powtórz sprawdzenie. Sam LuaLaTeX nie wymaga
+Perla, ale zalecany w tym projekcie `latexmk` potrzebuje go do automatycznego
+wykonywania wszystkich przebiegów LuaLaTeX i Bibera.
+
+```text
+latexmk main.tex       # kompilacja
+latexmk -g main.tex    # wymuszenie pełnej ponownej kompilacji
+latexmk -C main.tex    # usunięcie artefaktów kompilacji
+```
+
+Gotowa prezentacja po kompilacji znajduje się w `build/main.pdf`.
 
 ## Najważniejsze elementy
 
@@ -92,8 +124,10 @@ python tools/create_release.py --target online
 ```
 
 - `local` zawiera `latexmkrc` i jest przeznaczony do kompilacji na komputerze;
+  na Windows wymaga MiKTeX-u oraz interpretera Perl;
 - `online` nie zawiera `latexmkrc` i jest przeznaczony do Prism, Overleaf lub
-  podobnego edytora, w którym należy wybrać LuaLaTeX.
+  podobnego edytora, w którym należy wybrać LuaLaTeX; lokalna instalacja Perla
+  nie jest potrzebna.
 
 Archiwa trafiają do `dist/szablon-prezentacji-weail-local.zip` albo
 `dist/szablon-prezentacji-weail-online.zip`. Zawierają jeden krótki przykład
