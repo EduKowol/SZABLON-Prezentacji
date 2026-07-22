@@ -86,10 +86,19 @@ Polecenie `\lastslidetype` w `config/metadata.tex` przyjmuje jedną z wartości:
 
 ## Polskie znaki w listingach
 
-Styl listingów rejestruje polskie litery bezpośrednio w `\lst@DefEC`, dzięki
-czemu LuaLaTeX zachowuje ich właściwą kolejność, odstępy i kolorowanie.
-Komentarze, napisy i identyfikatory zawierające `ąćęłńóśźż` są poprawnie
-wyświetlane bez mapowania `literate`.
+Styl listingów rozszerza `\lst@DefEC` o polskie litery, dzięki czemu LuaLaTeX
+zachowuje ich właściwą kolejność, odstępy i kolorowanie. Znacznik kończący listę
+jest tworzony programowo, bez umieszczania w źródle znaku sterującego
+odrzucanego przez nowszy TeX Live. Komentarze, napisy i identyfikatory
+zawierające `ąćęłńóśźż` są poprawnie wyświetlane bez mapowania `literate`.
+
+Jeżeli lista błędów zaczyna się od komunikatu „Ten szablon wymaga LuaLaTeX”,
+projekt został uruchomiony przez niewłaściwy silnik. Błędy kodowania OT1 oraz
+`Invalid UTF-8 byte sequence` w pliku `main.vrb` są wtedy skutkami użycia
+pdfLaTeX, a nie błędami tekstu listingu. W Prism, Overleaf lub innym edytorze
+online ustaw dokument główny `main.tex` i kompilator **LuaLaTeX**, a następnie
+wykonaj pełną kompilację od początku (`Recompile from scratch`). Lokalnie
+kompiluj projekt poleceniem `latexmk main.tex`.
 
 ## Tworzenie nowej sekcji
 
@@ -124,10 +133,13 @@ python tools/create_release.py --target online
 ```
 
 - `local` zawiera `latexmkrc` i jest przeznaczony do kompilacji na komputerze;
-  na Windows wymaga MiKTeX-u oraz interpretera Perl;
+  na Windows wymaga MiKTeX-u oraz interpretera Perl. Jego `main.tex` nie zawiera
+  dyrektywy wymuszającej bezpośrednie uruchomienie LuaLaTeX, ponieważ kompilacją
+  i katalogiem `build/` zarządza `latexmkrc`;
 - `online` nie zawiera `latexmkrc` i jest przeznaczony do Prism, Overleaf lub
-  podobnego edytora, w którym należy wybrać LuaLaTeX; lokalna instalacja Perla
-  nie jest potrzebna.
+  podobnego edytora. Jego `main.tex` zawiera dyrektywę wyboru LuaLaTeX; lokalna
+  instalacja Perla nie jest potrzebna. Po wcześniejszej próbie z pdfLaTeX należy
+  wyczyścić pliki pomocnicze lub użyć funkcji `Recompile from scratch`.
 
 Archiwa trafiają do `dist/szablon-prezentacji-weail-local.zip` albo
 `dist/szablon-prezentacji-weail-online.zip`. Zawierają jeden krótki przykład

@@ -100,8 +100,9 @@ def copy_required(source: Path, destination: Path) -> None:
         shutil.copy2(source, destination)
 
 
-def starter_main() -> str:
-    return r"""% !TeX TXS-program:compile = txs:///latexmk/{-pdf}
+def starter_main(target: str) -> str:
+    program_directive = "% !TeX program = lualatex\n" if target == "online" else ""
+    return program_directive + r"""% !TeX TXS-program:compile = txs:///latexmk/{-pdf}
 % !TeX root = main.tex
 \input{config/metadata}
 \documentclass[aspectratio=169,11pt]{beamer}
@@ -185,7 +186,9 @@ lokalnego pliku `latexmkrc`. Po imporcie ustaw:
 - kompilator: LuaLaTeX.
 
 Katalogiem plików pomocniczych zarządza platforma internetowa. Lokalna
-instalacja Perla nie jest potrzebna.
+instalacja Perla nie jest potrzebna. Jeśli wcześniej wykonano kompilację przez
+pdfLaTeX, po zmianie silnika użyj funkcji pełnej kompilacji od początku
+(`Recompile from scratch`) albo wyczyść pliki pomocnicze projektu.
 """
 
 
@@ -198,7 +201,7 @@ def write_starter_tree(project_root: Path, staging: Path, target: str) -> None:
         copy_required(project_root / name, staging / name)
 
     (staging / "WARIANT.md").write_text(variant_readme(target), encoding="utf-8")
-    (staging / "main.tex").write_text(starter_main(), encoding="utf-8")
+    (staging / "main.tex").write_text(starter_main(target), encoding="utf-8")
 
     tools_dir = staging / "tools"
     tools_dir.mkdir()

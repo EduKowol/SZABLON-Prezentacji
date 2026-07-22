@@ -3,7 +3,7 @@
 
 \RequirePackage{iftex}
 \ifPDFTeX
-  \PackageError{presentation-style}{Ten szablon wymaga LuaLaTeX}{Uruchom latexmk main.tex.}
+  \PackageError{presentation-style}{Ten szablon wymaga LuaLaTeX}{W edytorze online wybierz kompilator LuaLaTeX. Lokalnie uruchom latexmk main.tex.}
 \else
   \RequirePackage{fontspec}
   \defaultfontfeatures{Ligatures=TeX}
@@ -144,20 +144,21 @@
   \fcolorbox{weaillightblue}{weaillight}{%
     \parbox[c][#1][c]{0.94\linewidth}{\centering\color{weailmuted}\small #2}}}
 
-% Pakiet listings nie dodaje automatycznie znakow Unicode o kodach > 255
-% do listy znakow przetwarzanych jak litery. W LuaLaTeX-u i XeLaTeX-u brak
-% tych deklaracji przesuwa m.in. ą, ę, ł, ś, ź i ż na poczatek fragmentu kodu.
-% Bezposrednia rejestracja znakow zachowuje ich kolejnosc oraz kolorowanie.
+% W LuaLaTeX-u i XeLaTeX-u polskie znaki sa rejestrowane jako litery. Znacznik
+% konczacy liste jest tworzony programowo, aby w zrodle nie umieszczac znaku
+% sterujacego odrzucanego przez nowszy TeX Live.
 \ifPDFTeX\else
-  \begingroup
-    \catcode0=12
-    \makeatletter
-    \g@addto@macro\lst@DefEC{%
-      \lst@CCECUse\lst@ProcessLetter
-      ąćęłńśźżĄĆĘŁŃŚŹŻ%
-      ^^00%
-    }%
-  \endgroup
+  \ExplSyntaxOn
+  \edef\presentationlistingssentinel{\char_generate:nn {0}{12}}
+  \ExplSyntaxOff
+  \edef\presentationlistingextension{%
+    \noexpand\lst@CCECUse\noexpand\lst@ProcessLetter
+    ąćęłńśźżĄĆĘŁŃŚŹŻ%
+    \presentationlistingssentinel}
+  \let\presentationoriginallstDefEC\lst@DefEC
+  \def\lst@DefEC{%
+    \presentationlistingextension
+    \presentationoriginallstDefEC}
 \fi
 \lstdefinestyle{weail}{
   basicstyle=\ttfamily\scriptsize,
