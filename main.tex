@@ -1,8 +1,12 @@
 % !TeX document-id = {df9ec23f-6055-43ee-aadd-d039429067b8}
 % !TeX TXS-program:compile = txs:///latexmk/{-pdf}
 % !TeX root = main.tex
-% Kompilacja: latexmk main.tex (LuaLaTeX jest ustawiony w latexmkrc).
+% Kompilacja: latexmk main.tex (silnik LuaLaTeX wybiera latexmkrc)
+% Pełna instrukcja konfiguracji TeXstudio znajduje się w pliku README.md.
 
+% === KONFIGURACJA SZABLONU — NIE ZMIENIAJ W TYM PLIKU ===
+% Dane prezentacji, język, typ pracy, logotypy i ostatni slajd ustawia się
+% wyłącznie w config/metadata.tex.
 \input{config/metadata}
 \documentclass[aspectratio=169,11pt]{beamer}
 \usepackage{config/presentation-style}
@@ -13,6 +17,8 @@
 
 \begin{document}
 
+% === SLAJDY POCZĄTKOWE — NIE ZMIENIAJ KOLEJNOŚCI POLECEŃ ===
+% Tytuł, autor i pozostałe dane są pobierane z config/metadata.tex.
 \begin{frame}
   \titlepage
 \end{frame}
@@ -21,6 +27,13 @@
   \tableofcontents[hideallsubsections]
 \end{frame}
 
+% === SEKCJE PREZENTACJI — TUTAJ USTALASZ ICH KOLEJNOŚĆ ===
+% Każdą część umieść w osobnym pliku w katalogu sections/ i dołącz przez
+% \input{sections/nazwa-pliku}, bez rozszerzenia .tex.
+% Nową strukturę można utworzyć poleceniem:
+% python tools/create_section.py 04-nazwa --title-pl "Tytuł" --title-en "Title"
+% Polecenie \section ustala nazwę w spisie treści; powinno bezpośrednio
+% poprzedzać odpowiadające mu polecenie \input.
 \section{\problemsectiontitle}
 \input{sections/01-problem-cel}
 
@@ -30,11 +43,17 @@
 \section{\resultssectiontitle}
 \input{sections/03-wyniki}
 
+% === BIBLIOGRAFIA — NIE ZMIENIAJ SPOSOBU JEJ GENEROWANIA ===
+% Źródła dodawaj do bibliografia.bib i cytuj w slajdach przez \cite{klucz}.
+% Usuń \nocite{*}, jeżeli bibliografia ma zawierać wyłącznie cytowane pozycje.
 \begin{frame}[allowframebreaks]{\bibliographytitle}
   \nocite{*}
   \printbibliography[heading=none]
 \end{frame}
 
+% === OSTATNI SLAJD — NIE EDYTUJ PONIŻSZEJ LOGIKI ===
+% Wybierz wariant title, thanks albo none przez \lastslidetype w
+% config/metadata.tex.
 \ifdefstring{\lastslidetype}{title}{%
   \begin{frame}
     \titlepage

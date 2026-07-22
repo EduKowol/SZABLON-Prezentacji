@@ -104,6 +104,12 @@ def starter_main(target: str) -> str:
     program_directive = "% !TeX program = lualatex\n" if target == "online" else ""
     return program_directive + r"""% !TeX TXS-program:compile = txs:///latexmk/{-pdf}
 % !TeX root = main.tex
+% Kompilacja lokalna: latexmk main.tex (silnik LuaLaTeX wybiera latexmkrc)
+% Pełna instrukcja znajduje się w plikach README.md i WARIANT.md.
+
+% === KONFIGURACJA SZABLONU — NIE ZMIENIAJ W TYM PLIKU ===
+% Dane prezentacji, język, typ pracy, logotypy i ostatni slajd ustawia się
+% wyłącznie w config/metadata.tex.
 \input{config/metadata}
 \documentclass[aspectratio=169,11pt]{beamer}
 \usepackage{config/presentation-style}
@@ -113,6 +119,9 @@ def starter_main(target: str) -> str:
 \date{\presentationyear}
 
 \begin{document}
+
+% === SLAJDY POCZĄTKOWE — NIE ZMIENIAJ KOLEJNOŚCI POLECEŃ ===
+% Tytuł, autor i pozostałe dane są pobierane z config/metadata.tex.
 \begin{frame}
   \titlepage
 \end{frame}
@@ -121,9 +130,19 @@ def starter_main(target: str) -> str:
   \tableofcontents[hideallsubsections]
 \end{frame}
 
+% === SEKCJE PREZENTACJI — TUTAJ USTALASZ ICH KOLEJNOŚĆ ===
+% Każdą część umieść w osobnym pliku w katalogu sections/ i dołącz przez
+% \input{sections/nazwa-pliku}, bez rozszerzenia .tex.
+% Nową strukturę można utworzyć poleceniem:
+% python tools/create_section.py 02-nazwa --title-pl "Tytuł" --title-en "Title"
+% Polecenie \section ustala nazwę w spisie treści; powinno bezpośrednio
+% poprzedzać odpowiadające mu polecenie \input.
 \section{Wprowadzenie}
 \input{sections/01-wprowadzenie}
 
+% === OSTATNI SLAJD — NIE EDYTUJ PONIŻSZEJ LOGIKI ===
+% Wybierz wariant title, thanks albo none przez \lastslidetype w
+% config/metadata.tex.
 \ifdefstring{\lastslidetype}{title}{%
   \begin{frame}\titlepage\end{frame}
 }{%
