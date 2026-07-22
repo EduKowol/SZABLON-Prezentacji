@@ -7,6 +7,19 @@ zgodne z repozytorium
 [EduKowol/SZABLON-Pracy-Dyplomowej](https://github.com/EduKowol/SZABLON-Pracy-Dyplomowej),
 dzięki czemu oba szablony można wykorzystywać w podobny sposób.
 
+## Spis treści
+
+- [Szybki start](#szybki-start)
+- [Kompilacja lokalna w Windows](#kompilacja-lokalna-w-windows)
+- [Najważniejsze elementy](#najważniejsze-elementy)
+- [Język i typ pracy](#język-i-typ-pracy)
+- [Ostatni slajd](#ostatni-slajd)
+- [Polskie znaki w listingach](#polskie-znaki-w-listingach)
+- [Tworzenie nowej sekcji](#tworzenie-nowej-sekcji)
+- [Czysta paczka startowa](#czysta-paczka-startowa)
+- [Konfiguracja TeXstudio](#texstudio)
+- [Dobre praktyki](#dobre-praktyki)
+
 ## Szybki start
 
 Do zalecanej kompilacji lokalnej na Windows potrzebne są **MiKTeX oraz Perl**,
