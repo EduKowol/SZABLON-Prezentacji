@@ -135,6 +135,53 @@ sekcji, bez plików z katalogów `build`, `tmp` i bez rozbudowanej treści
 demonstracyjnej. Ponowne uruchomienie generatora aktualizuje odpowiednie
 archiwum w katalogu `dist/`.
 
+### TeXstudio
+
+Poniższa konfiguracja powoduje, że TeXstudio uruchamia program `latexmk` w
+katalogu projektu. Program automatycznie odczytuje znajdujący się tam plik
+`latexmkrc`, który wybiera LuaLaTeX, uruchamia Biber w razie potrzeby i zapisuje
+PDF oraz pliki pomocnicze w katalogu `build/`.
+
+Przed konfiguracją należy zainstalować MiKTeX i Perl, ponownie uruchomić
+TeXstudio, a następnie otworzyć w nim plik `main.tex`. Aby skonfigurować
+budowanie projektu:
+
+1. Otwórz **Opcje → Konfiguruj TeXstudio** i po lewej stronie wybierz
+   **Zbuduj**.
+2. Zaznacz znajdującą się na dole okna opcję **Pokaż opcje zaawansowane**.
+3. W polu **Kompilator domyślny** wybierz `txs:///latexmk`.
+4. W sekcji **Polecenia użytkownika** kliknij **+ Dodaj**.
+5. W polu nazwy polecenia wpisz `user0:Latexmk LuaLaTeX`.
+6. W polu polecenia wpisz dokładnie:
+
+   ```text
+   latexmk.exe -synctex=1 -interaction=nonstopmode -file-line-error %.tex
+   ```
+
+7. W sekcji **Opcje budowania → Dodatkowe ścieżki wyszukiwania**, w polu
+   **Plik PDF**, wpisz:
+
+   ```text
+   build;
+   ```
+
+8. Zatwierdź konfigurację przyciskiem **OK**.
+
+![Konfiguracja TeXstudio do kompilacji projektu przez LatexMk](docs/images/Ustawienia_TeXstudio.png)
+
+Wartość `%.tex` oznacza aktualnie kompilowany dokument. Nie należy dopisywać do
+polecenia opcji `-pdf` ani `-lualatex`: właściwy silnik i katalog wyjściowy są
+ustawione centralnie w projektowym pliku `latexmkrc`. Wpis `build;` wskazuje
+TeXstudio dodatkowe miejsce, w którym ma szukać utworzonego PDF-u. Średnik jest
+separatorem ścieżek używanym w tym polu w systemie Windows.
+
+Po zapisaniu ustawień otwórz `main.tex` i uruchom kompilację. Gotowy dokument
+powinien pojawić się jako `build/main.pdf`. Jeśli TeXstudio przy pierwszym
+otwarciu dokumentu poprosi o zgodę na zastosowanie projektowej dyrektywy
+kompilacji, wybierz zgodę tylko dla tego dokumentu. Dyrektywa usuwa z
+wbudowanego polecenia wyłącznie opcję `-pdf`, aby nie wymuszać pdfLaTeX;
+pozostałe ustawienia przejmuje `latexmkrc`.
+
 ## Dobre praktyki
 
 - Jeden slajd powinien przekazywać jedną główną myśl.

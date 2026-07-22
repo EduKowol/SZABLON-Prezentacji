@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 ROOT_FILES = (".gitignore", "README.md", "bibliografia.bib")
-SOURCE_DIRS = ("assets", "config")
+SOURCE_DIRS = ("assets", "config", "docs")
 TOOL_FILES = ("create_release.py", "create_section.py")
 RESOURCE_DIRS = (
     "figures",
